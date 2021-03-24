@@ -11,10 +11,6 @@ function counterFunction(): void {
 
   seconds = seconds + 1;
 
-  for (let i = 0; i < 4; i++) {
-
-  }
-
   if (seconds > 59) {
     seconds = 0;
     minutes = minutes + 1;
