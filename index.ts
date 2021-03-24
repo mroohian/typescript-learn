@@ -11,6 +11,10 @@ function counterFunction(): void {
 
   seconds = seconds + 1;
 
+  for (let i = 0; i < 4; i++) {
+
+  }
+
   if (seconds > 59) {
     seconds = 0;
     minutes = minutes + 1;
@@ -29,5 +33,11 @@ function counterFunction(): void {
 
 setInput('12:00:00');
 
-setInterval(counterFunction, 5);
+setInterval(counterFunction, 1000);
 // setTimeout(counterFunction, 50);
+
+const inputElement = document.getElementById('input');
+
+inputElement.addEventListener('dblclick', function() {
+  setInput('12:00:00');
+});
