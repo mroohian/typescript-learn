@@ -78,6 +78,19 @@ function draw(): void {
     earth.imageWidth,
     earth.imageHeight);
 
+  // draw earth orbit
+  context.fillStyle = "green";
+  context.strokeStyle = "#e3ad13";
+  context.beginPath();
+  context.arc(sun.x, sun.y, earth.orbitRadius, 0, Math.PI * 2, false);
+  context.stroke();
+
+  // draw moon orbit
+  context.beginPath();
+  context.arc(earth.x, earth.y, moon.orbitRadius, Math.PI, 0, false);
+  context.stroke();
+
+  // draw sun
   context.drawImage(
     sun.image,
     sun.x - sun.imageWidth / 2,
