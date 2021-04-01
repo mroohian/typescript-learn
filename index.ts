@@ -44,6 +44,8 @@ moon.imageHeight = 7;
 moon.orbitRadius = 28.5;
 moon.orbitalSpeed = 0.01;
 
+const showMoon = true;
+
 const dt = 0.5;
 let t = 0;
 
@@ -61,26 +63,26 @@ function update(): void {
   moon.y = earth.y + Math.cos(t * moon.orbitalSpeed) * moon.orbitRadius;
 }
 
+function drawSolarSystemObject(obj: SolarSystemObject): void {
+  context.drawImage(
+    obj.image,
+    obj.x - obj.imageWidth / 2,
+    obj.y - obj.imageHeight / 2,
+    obj.imageWidth,
+    obj.imageHeight
+  );
+}
+
 function draw(): void {
   context.clearRect(0, 0, width, height);
 
   // draw moon
-  context.drawImage(
-    moon.image,
-    moon.x - moon.imageWidth / 2,
-    moon.y - moon.imageHeight / 2,
-    moon.imageWidth,
-    moon.imageHeight
-  );
+  if (showMoon) {
+    drawSolarSystemObject(moon);
+  }
 
   // draw earth
-  context.drawImage(
-    earth.image,
-    earth.x - earth.imageWidth / 2,
-    earth.y - earth.imageHeight / 2,
-    earth.imageWidth,
-    earth.imageHeight
-  );
+  drawSolarSystemObject(earth);
 
   // draw earth orbit
   context.fillStyle = "green";
@@ -95,13 +97,7 @@ function draw(): void {
   context.stroke();
 
   // draw sun
-  context.drawImage(
-    sun.image,
-    sun.x - sun.imageWidth / 2,
-    sun.y - sun.imageWidth / 2,
-    sun.imageWidth,
-    sun.imageHeight
-  );
+  drawSolarSystemObject(sun);
 }
 
 function mainLoop(): void {
