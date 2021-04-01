@@ -33,8 +33,6 @@ earth.image = new Image();
 earth.image.src = "https://mdn.mozillademos.org/files/1429/Canvas_earth.png";
 earth.imageWidth = 24;
 earth.imageHeight = 24;
-earth.x = 0;
-earth.y = 0;
 earth.orbitRadius = 105;
 earth.orbitalSpeed = 0.001;
 
@@ -43,15 +41,17 @@ moon.image = new Image();
 moon.image.src = "https://mdn.mozillademos.org/files/1443/Canvas_moon.png";
 moon.imageWidth = 7;
 moon.imageHeight = 7;
-moon.x = 0;
-moon.y = 0;
 moon.orbitRadius = 28.5;
 moon.orbitalSpeed = 0.01;
 
 const dt = 0.5;
 let t = 0;
 
-function draw(): void {
+function handleInput(): void {
+  // Empty
+}
+
+function update(): void {
   t = t + dt;
 
   earth.x = sun.x - Math.sin(t * earth.orbitalSpeed) * earth.orbitRadius;
@@ -59,7 +59,9 @@ function draw(): void {
 
   moon.x = earth.x - Math.sin(t * moon.orbitalSpeed) * moon.orbitRadius;
   moon.y = earth.y + Math.cos(t * moon.orbitalSpeed) * moon.orbitRadius;
+}
 
+function draw(): void {
   context.clearRect(0, 0, width, height);
 
   // draw moon
@@ -68,7 +70,8 @@ function draw(): void {
     moon.x - moon.imageWidth / 2,
     moon.y - moon.imageHeight / 2,
     moon.imageWidth,
-    moon.imageHeight);
+    moon.imageHeight
+  );
 
   // draw earth
   context.drawImage(
@@ -76,7 +79,8 @@ function draw(): void {
     earth.x - earth.imageWidth / 2,
     earth.y - earth.imageHeight / 2,
     earth.imageWidth,
-    earth.imageHeight);
+    earth.imageHeight
+  );
 
   // draw earth orbit
   context.fillStyle = "green";
@@ -87,7 +91,7 @@ function draw(): void {
 
   // draw moon orbit
   context.beginPath();
-  context.arc(earth.x, earth.y, moon.orbitRadius, Math.PI, 0, false);
+  context.arc(earth.x, earth.y, moon.orbitRadius, Math.PI * 2, 0, false);
   context.stroke();
 
   // draw sun
@@ -96,9 +100,16 @@ function draw(): void {
     sun.x - sun.imageWidth / 2,
     sun.y - sun.imageWidth / 2,
     sun.imageWidth,
-    sun.imageHeight);
-
-  window.requestAnimationFrame(draw);
+    sun.imageHeight
+  );
 }
 
-window.requestAnimationFrame(draw);
+function mainLoop(): void {
+  handleInput();
+  update();
+  draw();
+
+  window.requestAnimationFrame(mainLoop);
+}
+
+window.requestAnimationFrame(mainLoop);
