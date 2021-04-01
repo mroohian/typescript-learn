@@ -18,6 +18,16 @@ class SolarSystemObject {
   y: number;
   orbitRadius: number;
   orbitalSpeed: number;
+
+  draw(): void {
+    context.drawImage(
+      this.image,
+      this.x - this.imageWidth / 2,
+      this.y - this.imageHeight / 2,
+      this.imageWidth,
+      this.imageHeight
+    );
+  }
 }
 
 const sun = new SolarSystemObject();
@@ -44,8 +54,6 @@ moon.imageHeight = 7;
 moon.orbitRadius = 28.5;
 moon.orbitalSpeed = 0.01;
 
-const showMoon = true;
-
 const dt = 0.5;
 let t = 0;
 
@@ -63,26 +71,14 @@ function update(): void {
   moon.y = earth.y + Math.cos(t * moon.orbitalSpeed) * moon.orbitRadius;
 }
 
-function drawSolarSystemObject(obj: SolarSystemObject): void {
-  context.drawImage(
-    obj.image,
-    obj.x - obj.imageWidth / 2,
-    obj.y - obj.imageHeight / 2,
-    obj.imageWidth,
-    obj.imageHeight
-  );
-}
-
 function draw(): void {
   context.clearRect(0, 0, width, height);
 
   // draw moon
-  if (showMoon) {
-    drawSolarSystemObject(moon);
-  }
+  moon.draw();
 
   // draw earth
-  drawSolarSystemObject(earth);
+  earth.draw();
 
   // draw earth orbit
   context.fillStyle = "green";
@@ -97,7 +93,7 @@ function draw(): void {
   context.stroke();
 
   // draw sun
-  drawSolarSystemObject(sun);
+  sun.draw();
 }
 
 function mainLoop(): void {
