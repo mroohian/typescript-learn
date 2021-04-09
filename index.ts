@@ -1,3 +1,5 @@
+import { clockImage, sunImage, earthImage, moonImage } from "./images";
+
 // element
 const boomEl: HTMLCanvasElement = document.getElementById(
   "boom"
@@ -10,14 +12,12 @@ const height = boomEl.height;
 const context: CanvasRenderingContext2D = boomEl.getContext("2d");
 context.globalCompositeOperation = "destination-over";
 
-class SolarSystemObject {
+class ClockObject {
   image: HTMLImageElement;
   imageWidth: number;
   imageHeight: number;
   x: number;
   y: number;
-  orbitRadius: number;
-  orbitalSpeed: number;
 
   draw(): void {
     context.drawImage(
@@ -30,70 +30,101 @@ class SolarSystemObject {
   }
 }
 
-const sun = new SolarSystemObject();
-sun.image = new Image();
-sun.image.src = "https://mdn.mozillademos.org/files/1456/Canvas_sun.png";
-sun.imageWidth = 300;
-sun.imageHeight = 300;
-sun.x = width / 2;
-sun.y = height / 2;
+const clock = new ClockObject();
+clock.image = new Image();
+clock.image.src = clockImage;
+clock.imageWidth = 500;
+clock.imageHeight = 500;
+clock.x = width / 2;
+clock.y = height / 2;
 
-const earth = new SolarSystemObject();
-earth.image = new Image();
-earth.image.src = "https://mdn.mozillademos.org/files/1429/Canvas_earth.png";
-earth.imageWidth = 24;
-earth.imageHeight = 24;
-earth.orbitRadius = 105;
-earth.orbitalSpeed = 0.001;
+const hoursHandle = new ClockObject();
+hoursHandle.image = new Image();
+hoursHandle.image.src = sunImage;
+hoursHandle.imageWidth = 40;
+hoursHandle.imageHeight = 40;
 
-const moon = new SolarSystemObject();
-moon.image = new Image();
-moon.image.src = "https://mdn.mozillademos.org/files/1443/Canvas_moon.png";
-moon.imageWidth = 7;
-moon.imageHeight = 7;
-moon.orbitRadius = 28.5;
-moon.orbitalSpeed = 0.01;
+const minutesHandle = new ClockObject();
+minutesHandle.image = new Image();
+minutesHandle.image.src = earthImage;
+minutesHandle.imageWidth = 20;
+minutesHandle.imageHeight = 20;
 
-const dt = 0.5;
-let t = 0;
+const secondsHandle = new ClockObject();
+secondsHandle.image = new Image();
+secondsHandle.image.src = moonImage;
+secondsHandle.imageWidth = 15;
+secondsHandle.imageHeight = 15;
 
 function handleInput(): void {
   // Empty
 }
 
+function getHoursDegree(hours: number, minutes: number): number {
+  // input output     output in pi
+  // 0      90        3    *   π / 6
+  // 1      60        2    *   π / 6
+  // 2      30        1    *   π / 6
+  // 3      0         0    *   π / 6
+  // 4      330       11   *   π / 6
+  // 5      300       10   *   π / 6
+  // 6      270       9    *   π / 6
+  // 7      240       8    *   π / 6
+  // 8      210       7    *   π / 6
+  // 9      180       6    *   π / 6
+  // 10     150       5    *   π / 6
+  // 11     120       4    *   π / 6
+
+  return ((((15 - hours) % 12) - minutes / 60) * Math.PI) / 6;
+}
+
+function getMinutesDegree(minutes: number, seconds: number): number {
+  return ((((75 - minutes) % 60) * 2 - seconds / 60) * Math.PI) / 60;
+}
+
+function getSecondsDegree(seconds: number, ms: number): number {
+  return ((((75 - seconds) % 60) * 2 - ms / 500) * Math.PI) / 60;
+}
+
 function update(): void {
-  t = t + dt;
+  const date = new Date();
 
-  earth.x = sun.x - Math.sin(t * earth.orbitalSpeed) * earth.orbitRadius;
-  earth.y = sun.y + Math.cos(t * earth.orbitalSpeed) * earth.orbitRadius;
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const ms = date.getMilliseconds();
 
-  moon.x = earth.x - Math.sin(t * moon.orbitalSpeed) * moon.orbitRadius;
-  moon.y = earth.y + Math.cos(t * moon.orbitalSpeed) * moon.orbitRadius;
+  const hoursDeg = getHoursDegree(hours, minutes);
+  const minutesDeg = getMinutesDegree(minutes, seconds);
+  const secondsDeg = getSecondsDegree(seconds, ms);
+
+  hoursHandle.x = clock.x + Math.cos(hoursDeg) * 120;
+  hoursHandle.y = clock.y - Math.sin(hoursDeg) * 120;
+
+  minutesHandle.x = clock.x + Math.cos(minutesDeg) * 190;
+  minutesHandle.y = clock.y - Math.sin(minutesDeg) * 190;
+
+  secondsHandle.x = clock.x + Math.cos(secondsDeg) * 200;
+  secondsHandle.y = clock.y - Math.sin(secondsDeg) * 200;
 }
 
 function draw(): void {
   context.clearRect(0, 0, width, height);
 
   // draw moon
-  moon.draw();
+  secondsHandle.draw();
 
   // draw earth
-  earth.draw();
-
-  // draw earth orbit
-  context.fillStyle = "green";
-  context.strokeStyle = "#e3ad13";
-  context.beginPath();
-  context.arc(sun.x, sun.y, earth.orbitRadius, 0, Math.PI * 2, false);
-  context.stroke();
-
-  // draw moon orbit
-  context.beginPath();
-  context.arc(earth.x, earth.y, moon.orbitRadius, Math.PI * 2, 0, false);
-  context.stroke();
+  minutesHandle.draw();
 
   // draw sun
-  sun.draw();
+  hoursHandle.draw();
+
+  // draw clock
+  clock.draw();
+
+  context.fillStyle = "white";
+  context.fillRect(0, 0, width, height);
 }
 
 function mainLoop(): void {
@@ -101,7 +132,9 @@ function mainLoop(): void {
   update();
   draw();
 
-  window.requestAnimationFrame(mainLoop);
+  requestAnimationFrame(mainLoop);
 }
 
-window.requestAnimationFrame(mainLoop);
+requestAnimationFrame(mainLoop);
+
+// setInterval(mainLoop, 500);
